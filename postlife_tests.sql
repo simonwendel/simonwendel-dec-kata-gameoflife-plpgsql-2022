@@ -35,9 +35,11 @@ CREATE FUNCTION test_schema()
     LANGUAGE plpgsql AS
 $FUN$
 BEGIN
+    RETURN NEXT has_sequence('generation_seq');
     RETURN NEXT has_table('universe');
     RETURN NEXT columns_are('universe', array [ 'generation', 'state' ]);
-    RETURN NEXT has_sequence('generation_seq');
+    RETURN NEXT col_type_is('universe', 'generation', 'integer');
+    RETURN NEXT col_type_is('universe', 'state', 'integer[]');
 END
 $FUN$;
 
