@@ -79,9 +79,9 @@ CREATE FUNCTION test_function_current_generation()
     LANGUAGE plpgsql AS
 $FUN$
 BEGIN
-    RETURN NEXT results_eq(
-            $$ SELECT * FROM current_generation() $$,
-            $$ VALUES (array [[0,0,0],[1,0,1],[0,1,0]]) $$,
+    RETURN NEXT is(
+            current_generation(),
+            array [[0,0,0],[1,0,1],[0,1,0]],
             'current_generation() should return state of last added generation');
 END
 $FUN$;
