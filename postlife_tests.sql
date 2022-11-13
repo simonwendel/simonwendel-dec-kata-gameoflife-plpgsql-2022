@@ -39,6 +39,19 @@ BEGIN
 END
 $FUN$;
 
+DROP FUNCTION IF EXISTS test_function_reset_game;
+CREATE FUNCTION test_function_reset_game()
+    RETURNS SETOF TEXT
+    LANGUAGE plpgsql AS
+$FUN$
+BEGIN
+    PERFORM reset_game();
+    RETURN NEXT is_empty(
+            $$ SELECT * FROM universe $$,
+            'reset_game() should clear all generations from universe');
+END
+$FUN$;
+
 DROP FUNCTION IF EXISTS test_function_add_generation;
 CREATE FUNCTION test_function_add_generation()
     RETURNS SETOF TEXT

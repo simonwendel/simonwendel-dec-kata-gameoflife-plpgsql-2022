@@ -24,6 +24,13 @@ CREATE TABLE universe
     state      integer[][]
 );
 
+DROP FUNCTION IF EXISTS reset_game;
+CREATE FUNCTION reset_game()
+    RETURNS VOID LANGUAGE sql AS
+$FUN$
+DELETE FROM universe WHERE 1=1
+$FUN$;
+
 DROP FUNCTION IF EXISTS add_generation;
 CREATE FUNCTION add_generation(new_state integer[][])
     RETURNS TABLE
