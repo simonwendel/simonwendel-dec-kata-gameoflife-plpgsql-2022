@@ -24,6 +24,7 @@ $FUN$
 BEGIN
     PERFORM add_generation(array [[0,0,0],[0,1,1],[1,1,1]]);
     PERFORM add_generation(array [[1,0,1],[1,0,1],[0,1,0]]);
+    PERFORM add_generation(array [[0,0,0],[1,0,1],[0,1,0]]);
 END
 $FUN$;
 
@@ -48,7 +49,8 @@ BEGIN
             $$ SELECT * FROM universe $$,
             $$ VALUES
                 (1,array [[0,0,0],[0,1,1],[1,1,1]]),
-                (2,array [[1,0,1],[1,0,1],[0,1,0]])
+                (2,array [[1,0,1],[1,0,1],[0,1,0]]),
+                (3,array [[0,0,0],[1,0,1],[0,1,0]])
             $$,
             'universe should contain two generations');
 END
@@ -62,7 +64,7 @@ $FUN$
 BEGIN
     RETURN NEXT results_eq(
             $$ SELECT * FROM current_generation() $$,
-            $$ VALUES (array [[1,0,1],[1,0,1],[0,1,0]]) $$,
+            $$ VALUES (array [[0,0,0],[1,0,1],[0,1,0]]) $$,
             'current_generation() should return state of last added generation');
 END
 $FUN$;
