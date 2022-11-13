@@ -17,18 +17,23 @@
 CREATE SCHEMA IF NOT EXISTS postlife;
 SET SCHEMA 'postlife';
 
+DROP SEQUENCE IF EXISTS generation_seq CASCADE;
+CREATE SEQUENCE generation_seq AS integer;
+
 DROP TABLE IF EXISTS universe;
 CREATE TABLE universe
 (
-    generation serial,
+    generation integer DEFAULT nextval('generation_seq'),
     state      integer[][]
 );
 
 DROP FUNCTION IF EXISTS reset_game;
 CREATE FUNCTION reset_game()
-    RETURNS VOID LANGUAGE sql AS
+    RETURNS VOID
+    LANGUAGE sql AS
 $FUN$
-DELETE FROM universe WHERE 1=1
+TRUNCATE TABLE universe;
+ALTER SEQUENCE generation_seq RESTART WITH 1;
 $FUN$;
 
 DROP FUNCTION IF EXISTS add_generation;
@@ -43,14 +48,16 @@ AS
 $FUN$
 INSERT INTO universe (state)
 VALUES (new_state)
-RETURNING *
+RETURNING *;
 $FUN$;
 
 DROP FUNCTION IF EXISTS current_generation;
 CREATE FUNCTION current_generation()
-    RETURNS integer[][] LANGUAGE sql AS
+    RETURNS integer[][]
+    LANGUAGE sql AS
 $FUN$
-SELECT state  FROM universe
+SELECT state
+FROM universe
 ORDER BY generation DESC
-LIMIT 1
+LIMIT 1;
 $FUN$;

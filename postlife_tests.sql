@@ -22,6 +22,7 @@ CREATE FUNCTION setup_fixture()
     LANGUAGE plpgsql AS
 $FUN$
 BEGIN
+    PERFORM reset_game();
     PERFORM add_generation(array [[0,0,0],[0,1,1],[1,1,1]]);
     PERFORM add_generation(array [[1,0,1],[1,0,1],[0,1,0]]);
     PERFORM add_generation(array [[0,0,0],[1,0,1],[0,1,0]]);
