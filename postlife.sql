@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS universe;
 CREATE TABLE universe
 (
     generation integer DEFAULT nextval('generation_seq'),
-    state      integer[][]
+    state      integer[]
 );
 
 DROP FUNCTION IF EXISTS reset_game;
@@ -37,11 +37,11 @@ ALTER SEQUENCE generation_seq RESTART WITH 1;
 $FUN$;
 
 DROP FUNCTION IF EXISTS add_generation;
-CREATE FUNCTION add_generation(new_state integer[][])
+CREATE FUNCTION add_generation(new_state integer[])
     RETURNS TABLE
             (
                 generation integer,
-                state      integer[][]
+                state      integer[]
             )
     LANGUAGE sql
 AS
@@ -53,7 +53,7 @@ $FUN$;
 
 DROP FUNCTION IF EXISTS current_generation;
 CREATE FUNCTION current_generation()
-    RETURNS integer[][]
+    RETURNS integer[]
     LANGUAGE sql AS
 $FUN$
 SELECT state
