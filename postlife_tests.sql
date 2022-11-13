@@ -36,7 +36,8 @@ CREATE FUNCTION test_schema()
 $FUN$
 BEGIN
     RETURN NEXT has_table('universe');
-    RETURN NEXT (SELECT columns_are('universe', array [ 'generation', 'state' ]));
+    RETURN NEXT columns_are('universe', array [ 'generation', 'state' ]);
+    RETURN NEXT has_sequence('generation_seq');
 END
 $FUN$;
 
