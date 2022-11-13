@@ -36,37 +36,14 @@ AS
 $FUN$
 INSERT INTO universe (state)
 VALUES (new_state)
-RETURNING *;
+RETURNING *
 $FUN$;
 
-DROP FUNCTION IF EXISTS test_schema;
-CREATE FUNCTION test_schema()
-    RETURNS SETOF TEXT
-    LANGUAGE plpgsql AS
+DROP FUNCTION IF EXISTS current_generation;
+CREATE FUNCTION current_generation()
+    RETURNS integer[][] LANGUAGE sql AS
 $FUN$
-BEGIN
-    RETURN NEXT has_table('universe');
-    RETURN NEXT (SELECT columns_are('universe', array [ 'generation', 'state' ]));
-END
+SELECT state  FROM universe
+ORDER BY generation DESC
+LIMIT 1
 $FUN$;
-
-DROP FUNCTION IF EXISTS test_function_add_generation;
-CREATE FUNCTION test_function_add_generation()
-    RETURNS SETOF TEXT
-    LANGUAGE plpgsql AS
-$FUN$
-BEGIN
-    PERFORM add_generation(array [[0,0,0],[0,1,1],[1,1,1]]);
-    PERFORM add_generation(array [[1,0,1],[1,0,1],[0,1,0]]);
-    RETURN NEXT results_eq(
-            $$ SELECT * FROM universe $$,
-            $$ VALUES
-                (1,array [[0,0,0],[0,1,1],[1,1,1]]),
-                (2,array [[1,0,1],[1,0,1],[0,1,0]])
-            $$,
-            'universe should contain two generations');
-END
-$FUN$;
-
-SELECT *
-FROM runtests();
