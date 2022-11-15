@@ -61,3 +61,59 @@ FROM universe
 ORDER BY generation DESC
 LIMIT 1;
 $FUN$;
+
+DROP FUNCTION IF EXISTS current_generation_rank;
+CREATE FUNCTION current_generation_rank()
+    RETURNS integer
+    LANGUAGE sql AS
+$FUN$
+SELECT generation
+FROM universe
+ORDER BY generation DESC
+LIMIT 1;
+$FUN$;
+
+DROP FUNCTION IF EXISTS number_of_neighbors;
+CREATE FUNCTION number_of_neighbors(x integer, y integer, state integer[])
+    RETURNS integer
+    LANGUAGE sql AS
+$FUN$
+SELECT (SUM(res) - (SELECT state[y][x]))
+FROM UNNEST(state[y - 1:y + 1][x - 1:x + 1]) res;
+$FUN$;
+
+DROP FUNCTION IF EXISTS policy;
+CREATE FUNCTION policy(curr integer, neighbors integer)
+    RETURNS integer
+    LANGUAGE sql AS
+$FUN$
+SELECT CASE
+           WHEN curr = 0 AND neighbors = 3 THEN 1
+           WHEN curr = 1 AND neighbors = ANY (ARRAY [2, 3]) THEN 1
+           ELSE 0
+           END;
+$FUN$;
+
+DROP FUNCTION IF EXISTS step_generation;
+CREATE FUNCTION step_generation()
+    RETURNS integer[]
+    LANGUAGE plpgsql AS
+$FUN$
+DECLARE
+    curr_state integer[] := current_generation();
+    next_state integer[] := current_generation();
+    width      integer   := array_upper(curr_state, 1);
+    height     integer   := array_upper(curr_state, 2);
+    neighbors  integer;
+BEGIN
+    FOR y IN 1..height
+        LOOP
+            FOR x IN 1..width
+                LOOP
+                    neighbors := number_of_neighbors(x, y, curr_state);
+                    next_state[y][x] := policy(curr_state[y][x], neighbors);
+                END LOOP;
+        END LOOP;
+    RETURN (SELECT state FROM add_generation(next_state));
+END
+$FUN$;

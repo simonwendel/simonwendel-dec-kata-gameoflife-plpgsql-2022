@@ -86,5 +86,104 @@ BEGIN
 END
 $FUN$;
 
+DROP FUNCTION IF EXISTS test_function_current_generation_rank;
+CREATE FUNCTION test_function_current_generation_rank()
+    RETURNS SETOF TEXT
+    LANGUAGE plpgsql AS
+$FUN$
+BEGIN
+    RETURN NEXT is(
+            current_generation_rank(), 3, 'current_generation_rank() should return rank of last added generation');
+END
+$FUN$;
+
+DROP FUNCTION IF EXISTS test_function_number_of_neighbors;
+CREATE FUNCTION test_function_number_of_neighbors()
+    RETURNS SETOF TEXT
+    LANGUAGE plpgsql AS
+$FUN$
+BEGIN
+    RETURN NEXT is(
+            number_of_neighbors(1, 2, array [[0,0,0],[0,1,1],[1,1,1]]),
+            3,
+            'number_of_neighbors() should return number of living neighbors at (x,y)');
+END
+$FUN$;
+
+DROP FUNCTION IF EXISTS test_function_policy;
+CREATE FUNCTION test_function_policy()
+    RETURNS SETOF TEXT
+    LANGUAGE plpgsql AS
+$FUN$
+BEGIN
+    RETURN NEXT is(policy(1, 0), 0, 'policy() should return off cell if on cell with 0 neighbors');
+    RETURN NEXT is(policy(1, 1), 0, 'policy() should return off cell if on cell with 1 neighbor');
+
+    RETURN NEXT is(policy(1, 2), 1, 'policy() should return on cell if on cell with 2 neighbors');
+    RETURN NEXT is(policy(1, 3), 1, 'policy() should return on cell if on cell with 3 neighbors');
+
+    FOR n IN 4..9
+        LOOP
+            RETURN NEXT is(policy(1, n), 0,
+                           'policy() should return off cell if on cell with ' || n::text || ' neighbors');
+        END LOOP;
+
+    RETURN NEXT is(policy(0, 3), 1, 'policy() should return on cell if off cell with 3 neighbors');
+END
+$FUN$;
+
+DROP FUNCTION IF EXISTS test_function_step_generation;
+CREATE FUNCTION test_function_step_generation()
+    RETURNS SETOF TEXT
+    LANGUAGE plpgsql AS
+$FUN$
+BEGIN
+    PERFORM reset_game();
+    PERFORM add_generation(array [
+        [0,0,0,0],
+        [0,0,1,1],
+        [0,1,1,1],
+        [0,0,0,0]]);
+
+    PERFORM step_generation();
+    RETURN NEXT is(
+            current_generation(),
+            array [
+                [0,0,0,0],
+                [0,1,0,1],
+                [0,1,0,1],
+                [0,0,1,0]],
+            'step_generation() should update state with new generation');
+
+    RETURN NEXT is(
+            step_generation(),
+            array [
+                [0,0,0,0],
+                [0,0,0,0],
+                [0,1,0,1],
+                [0,0,1,0]],
+            'step_generation() should return new generation');
+
+    RETURN NEXT is(
+            step_generation(),
+            array [
+                [0,0,0,0],
+                [0,0,0,0],
+                [0,0,1,0],
+                [0,0,1,0]],
+            'step_generation() should return new generation');
+
+    RETURN NEXT is(
+            step_generation(),
+            array [
+                [0,0,0,0],
+                [0,0,0,0],
+                [0,0,0,0],
+                [0,0,0,0]],
+            'step_generation() should return new generation');
+
+END
+$FUN$;
+
 SELECT *
 FROM runtests();
