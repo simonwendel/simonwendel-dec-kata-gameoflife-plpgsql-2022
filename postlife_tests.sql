@@ -204,7 +204,25 @@ BEGIN
                 [0,0,0],
                 [0,1,0],
                 [0,1,0]],
-            'step() should return supplied number of generation(s)');
+            'step() should advance the supplied number of steps');
+
+    RETURN NEXT is(
+            step(0),
+            array [
+                [0,0,0],
+                [0,0,0],
+                [0,1,0],
+                [0,1,0]],
+            'step() should not advance when given 0 steps');
+
+    RETURN NEXT is(
+            step(-1),
+            array [
+                [0,0,0],
+                [0,0,0],
+                [0,1,0],
+                [0,1,0]],
+            'step() should not advance when given negative steps');
 
     RETURN NEXT is(
             step(1),
@@ -213,7 +231,7 @@ BEGIN
                 [0,0,0],
                 [0,0,0],
                 [0,0,0]],
-            'step() should return supplied number of generation(s)');
+            'step() should return state after advancing supplied number of steps');
 END
 $FUN$;
 
