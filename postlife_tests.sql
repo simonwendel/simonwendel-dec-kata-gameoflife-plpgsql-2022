@@ -132,8 +132,8 @@ BEGIN
 END
 $FUN$;
 
-DROP FUNCTION IF EXISTS test_function_step_generation;
-CREATE FUNCTION test_function_step_generation()
+DROP FUNCTION IF EXISTS test_function_step_next;
+CREATE FUNCTION test_function_step_next()
     RETURNS SETOF TEXT
     LANGUAGE plpgsql AS
 $FUN$
@@ -145,7 +145,7 @@ BEGIN
         [1,1,1],
         [0,0,0]]);
 
-    PERFORM step_generation();
+    PERFORM step_next();
     RETURN NEXT is(
             current_generation(),
             array [
@@ -153,34 +153,34 @@ BEGIN
                 [1,0,1],
                 [1,0,1],
                 [0,1,0]],
-            'step_generation() should update state with new generation');
+            'step_next() should update state with new generation');
 
     RETURN NEXT is(
-            step_generation(),
+            step_next(),
             array [
                 [0,0,0],
                 [0,0,0],
                 [1,0,1],
                 [0,1,0]],
-            'step_generation() should return new generation');
+            'step_next() should return new generation');
 
     RETURN NEXT is(
-            step_generation(),
+            step_next(),
             array [
                 [0,0,0],
                 [0,0,0],
                 [0,1,0],
                 [0,1,0]],
-            'step_generation() should return new generation');
+            'step_next() should return new generation');
 
     RETURN NEXT is(
-            step_generation(),
+            step_next(),
             array [
                 [0,0,0],
                 [0,0,0],
                 [0,0,0],
                 [0,0,0]],
-            'step_generation() should return new generation');
+            'step_next() should return new generation');
 
 END
 $FUN$;

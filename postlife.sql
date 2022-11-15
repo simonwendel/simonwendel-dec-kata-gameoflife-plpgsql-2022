@@ -94,8 +94,8 @@ SELECT CASE
            END;
 $FUN$;
 
-DROP FUNCTION IF EXISTS step_generation;
-CREATE FUNCTION step_generation()
+DROP FUNCTION IF EXISTS step_next;
+CREATE FUNCTION step_next()
     RETURNS integer[]
     LANGUAGE plpgsql AS
 $FUN$
