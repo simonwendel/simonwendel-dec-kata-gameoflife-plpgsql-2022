@@ -181,7 +181,39 @@ BEGIN
                 [0,0,0],
                 [0,0,0]],
             'step_next() should return new generation');
+END
+$FUN$;
 
+DROP FUNCTION IF EXISTS test_function_step;
+CREATE FUNCTION test_function_step()
+    RETURNS SETOF TEXT
+    LANGUAGE plpgsql AS
+$FUN$
+BEGIN
+    PERFORM reset_game();
+    PERFORM add_generation(array [
+        [0,0,0],
+        [0,1,1],
+        [1,1,1],
+        [0,0,0]]);
+
+    RETURN NEXT is(
+            step(3),
+            array [
+                [0,0,0],
+                [0,0,0],
+                [0,1,0],
+                [0,1,0]],
+            'step() should return supplied number of generation(s)');
+
+    RETURN NEXT is(
+            step(1),
+            array [
+                [0,0,0],
+                [0,0,0],
+                [0,0,0],
+                [0,0,0]],
+            'step() should return supplied number of generation(s)');
 END
 $FUN$;
 

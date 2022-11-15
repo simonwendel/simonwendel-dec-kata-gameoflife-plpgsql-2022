@@ -117,3 +117,18 @@ BEGIN
     RETURN (SELECT state FROM add_generation(next_state));
 END
 $FUN$;
+
+DROP FUNCTION IF EXISTS step;
+CREATE FUNCTION step(generations integer)
+    RETURNS integer[]
+    LANGUAGE plpgsql AS
+$FUN$
+BEGIN
+    WHILE generations > 0
+        LOOP
+            PERFORM step_next();
+            generations = generations - 1;
+        END LOOP;
+    RETURN current_generation();
+END
+$FUN$;
