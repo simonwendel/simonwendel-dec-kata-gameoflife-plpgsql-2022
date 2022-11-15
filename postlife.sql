@@ -102,8 +102,8 @@ $FUN$
 DECLARE
     curr_state integer[] := current_generation();
     next_state integer[] := current_generation();
-    width      integer   := array_upper(curr_state, 1);
-    height     integer   := array_upper(curr_state, 2);
+    width      integer   := array_upper(curr_state, 2);
+    height     integer   := array_upper(curr_state, 1);
     neighbors  integer;
 BEGIN
     FOR y IN 1..height

@@ -140,46 +140,46 @@ $FUN$
 BEGIN
     PERFORM reset_game();
     PERFORM add_generation(array [
-        [0,0,0,0],
-        [0,0,1,1],
-        [0,1,1,1],
-        [0,0,0,0]]);
+        [0,0,0],
+        [0,1,1],
+        [1,1,1],
+        [0,0,0]]);
 
     PERFORM step_generation();
     RETURN NEXT is(
             current_generation(),
             array [
-                [0,0,0,0],
-                [0,1,0,1],
-                [0,1,0,1],
-                [0,0,1,0]],
+                [0,0,0],
+                [1,0,1],
+                [1,0,1],
+                [0,1,0]],
             'step_generation() should update state with new generation');
 
     RETURN NEXT is(
             step_generation(),
             array [
-                [0,0,0,0],
-                [0,0,0,0],
-                [0,1,0,1],
-                [0,0,1,0]],
+                [0,0,0],
+                [0,0,0],
+                [1,0,1],
+                [0,1,0]],
             'step_generation() should return new generation');
 
     RETURN NEXT is(
             step_generation(),
             array [
-                [0,0,0,0],
-                [0,0,0,0],
-                [0,0,1,0],
-                [0,0,1,0]],
+                [0,0,0],
+                [0,0,0],
+                [0,1,0],
+                [0,1,0]],
             'step_generation() should return new generation');
 
     RETURN NEXT is(
             step_generation(),
             array [
-                [0,0,0,0],
-                [0,0,0,0],
-                [0,0,0,0],
-                [0,0,0,0]],
+                [0,0,0],
+                [0,0,0],
+                [0,0,0],
+                [0,0,0]],
             'step_generation() should return new generation');
 
 END
