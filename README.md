@@ -1,4 +1,4 @@
-# Postlife - A Tricky-To-Develop GameOfLife on top of PostgreSQL
+# PostLife - A tricky-to-develop GameOfLife in PL/pgSQL
 
 GameOfLife is an awesome thing, this is a not as awesome implementation using some naïve PL/pgSQL code. It's of course
 all developed using TDD, because that's the modern way to code\*!
